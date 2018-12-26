@@ -1,11 +1,8 @@
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
 import java.util.Base64
-import java.nio.charset.StandardCharsets
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import java.net.URLEncoder
-
 
 object Jwt extends App {
 
