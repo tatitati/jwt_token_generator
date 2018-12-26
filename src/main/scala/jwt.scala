@@ -9,32 +9,32 @@ import java.net.URLEncoder
 
 object Jwt extends App {
 
-  def header(): String = {
+  def header(): Array[Byte] = {
       compactRender(
         ("alg" -> "HS256") ~ ("typ" -> "JWT")
-      )
+      ).getBytes
   }
 
-  def payload(): String = {
+  def payload(): Array[Byte] = {
     compactRender(
       ("sub" -> "1234567890") ~
       ("name" -> "John Doe") ~
       ("admin" -> true)
-    )
+    ).getBytes
   }
 
-  def signature(): String = {
+  def signature(): Array[Byte] = {
     hmacSha256(
-      encode64(header()) + "." + encode64(payload()),
+      encode64Url(header()) + "." + encode64Url(payload()),
       "mykey"
     )
   }
 
-  def encode64(value: String) = {
-    Base64.getUrlEncoder.encodeToString(value.getBytes(StandardCharsets.UTF_8))
+  def encode64Url(value: Array[Byte]) = {
+    Base64.getUrlEncoder.encodeToString(value)
   }
 
-  def hmacSha256(value: String, secret: String): String = {
+  def hmacSha256(value: String, secret: String): Array[Byte] = {
     val sha256_HMAC: Mac = Mac.getInstance("HmacSHA256")
 
     sha256_HMAC.init(
@@ -44,15 +44,14 @@ object Jwt extends App {
       )
     )
 
-    val mac = sha256_HMAC.doFinal(value.getBytes())
-    Base64.getUrlEncoder.encodeToString(mac)
+    sha256_HMAC.doFinal(value.getBytes())
   }
 
-  val token = encode64(header()) +
+  val token = encode64Url(header()) +
     "." +
-    encode64(payload()) +
+    encode64Url(payload()) +
     "." +
-    signature()
+    encode64Url(signature())
 
 
   println("\n\n")
